@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>20/10 – Gửi trao yêu thương</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#ffe3ee;--bg2:#ffb6d0;--pink:#ff4f8b;--deep:#c2185b;--card:rgba(255,255,255,.68);--text:#6b1d3f;--line:rgba(255,79,139,.35);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#3a0f26;--bg2:#6a1b43;--card:rgba(255,255,255,.1);--text:#ffd9e8;--line:rgba(255,150,190,.4)}}
+:root[data-theme="dark"]{--bg1:#3a0f26;--bg2:#6a1b43;--card:rgba(255,255,255,.1);--text:#ffd9e8;--line:rgba(255,150,190,.4)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Quicksand','Segoe UI',sans-serif;color:var(--text);background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg1));background-size:300% 300%;animation:bg 14s ease infinite;user-select:none;cursor:pointer}
+@keyframes bg{50%{background-position:100% 100%}}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
+.blob{position:fixed;border-radius:50%;filter:blur(60px);opacity:.5;background:var(--pink);z-index:0;transition:transform .4s ease-out}
+.b1{width:340px;height:340px;top:-90px;left:-90px}.b2{width:280px;height:280px;bottom:-70px;right:-60px;background:#ff9ec4}
+.stage{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 18px 70px;text-align:center;opacity:0;visibility:hidden;transform:scale(.92) translateY(30px);filter:blur(14px);transition:all .8s cubic-bezier(.2,.8,.2,1)}
+.stage.on{opacity:1;visibility:visible;transform:none;filter:none}
+.stage.out{transform:scale(1.08) translateY(-30px)}
+.script{font-family:'Dancing Script',cursive;color:var(--deep)}
+.big{font-size:clamp(88px,22vw,210px);font-weight:700;line-height:1;background:linear-gradient(120deg,#ff4f8b,#ff9ec4,#c2185b,#ff4f8b);background-size:250%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 5s linear infinite,float 4s ease-in-out infinite;filter:drop-shadow(0 8px 18px rgba(255,79,139,.4))}
+@keyframes shine{to{background-position:250% 0}}
+@keyframes float{50%{transform:translateY(-12px)}}
+h1.script{font-size:clamp(30px,6vw,56px)}
+.hint{margin-top:26px;font-weight:700;letter-spacing:.08em;color:var(--pink);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35;transform:scale(.96)}}
+.frame{position:relative;width:min(88vw,1000px);aspect-ratio:3/2;border-radius:26px;padding:10px;background:var(--card);backdrop-filter:blur(10px);border:2px solid var(--line);box-shadow:0 20px 60px rgba(194,24,91,.3);transform:rotate(-1.5deg);transition:transform .5s}
+.stage.on .frame{animation:pop .9s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes pop{from{transform:rotate(-8deg) scale(.7)}to{transform:rotate(-1.5deg) scale(1)}}
+.slot{position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;width:100%;height:100%;border-radius:18px;overflow:hidden;border:2px dashed var(--pink);background:repeating-linear-gradient(45deg,rgba(255,79,139,.08) 0 12px,transparent 12px 24px);color:var(--pink);font-weight:700;cursor:pointer}
+.slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slot.has{border:0}.slot.has span{display:none}
+.slot span{font-size:14px;padding:0 8px}.slot b{font-size:30px}
+.cap{margin-top:18px;font-size:clamp(22px,4vw,34px)}
+.wish{max-width:1000px;padding:34px 30px;border-radius:30px;background:var(--card);backdrop-filter:blur(12px);border:2px solid var(--line);box-shadow:0 20px 60px rgba(194,24,91,.25)}
+.wish p{margin-top:18px;font-size:clamp(21px,3.2vw,42px);line-height:1.75;white-space:pre-line;min-height:6em}
+.caret::after{content:"|";animation:blink .8s infinite;color:var(--pink)}@keyframes blink{50%{opacity:0}}
+.members{overflow-y:auto;justify-content:flex-start;padding-top:22px;cursor:default}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;width:min(94vw,960px);margin-top:14px;perspective:1000px}
+@media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+.card{position:relative;aspect-ratio:3/4;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.3,.4,1);opacity:0;transform:translateY(40px) scale(.8)}
+.stage.on .card{animation:rise .7s cubic-bezier(.2,1.2,.3,1) forwards;animation-delay:calc(var(--i)*70ms + .4s)}
+@keyframes rise{to{opacity:1;transform:none}}
+.card.flip{animation:none;opacity:1;transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;overflow:hidden;background:var(--card);border:2px solid var(--line);box-shadow:0 10px 26px rgba(194,24,91,.22);display:flex;flex-direction:column;padding:8px}
+.face .slot{flex:1;min-height:0;border-radius:14px}
+.name{padding:8px 4px 2px;font-weight:700;font-size:15px}
+.back{transform:rotateY(180deg);justify-content:center;align-items:center;padding:14px;font-size:14px;line-height:1.5;background:linear-gradient(160deg,#ff9ec4,#ff4f8b);color:#fff}
+.card:hover:not(.flip){translate:0 -6px}
+.cls{font-size:clamp(30px,6vw,52px);margin-top:-6px;font-weight:700;letter-spacing:.04em;color:var(--deep);text-shadow:0 2px 14px rgba(255,255,255,.8)}
+.tag{font-weight:700;letter-spacing:.1em;color:var(--pink);margin-bottom:12px;font-size:14px}
+.mem{display:flex;align-items:center;gap:40px;width:min(92vw,1250px);justify-content:center}
+.pframe{flex:0 0 min(36vw,430px);aspect-ratio:3/4;border-radius:28px;padding:10px;background:var(--card);backdrop-filter:blur(10px);border:2px solid var(--line);box-shadow:0 20px 60px rgba(194,24,91,.3);transform:rotate(-3deg)}
+.stage.on .pframe{animation:pop .9s cubic-bezier(.2,1.2,.3,1) both}
+.mtxt{flex:1;text-align:left;padding:26px;border-radius:26px;background:var(--card);backdrop-filter:blur(10px);border:2px solid var(--line);cursor:default}
+.mwish{margin-top:12px;font-size:clamp(21px,3vw,40px);line-height:1.6;white-space:pre-line}
+.vf{width:min(92vw,1300px);aspect-ratio:16/9;border-radius:26px;padding:10px;background:var(--card);backdrop-filter:blur(10px);border:2px solid var(--line);box-shadow:0 20px 60px rgba(194,24,91,.3);margin-top:14px}
+.slot video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.prog{width:min(40vw,200px);height:8px;border-radius:9px;background:var(--line);overflow:hidden}.prog i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,#ff9ec4,var(--pink));transition:width .6s cubic-bezier(.2,.8,.2,1)}
+#cnt{font-size:13px;color:var(--pink);min-width:44px}
+.fin{max-width:1150px}.fin p{font-size:clamp(19px,2.6vw,34px);line-height:1.6;min-height:10em}
+@media(max-width:640px){.mem{flex-direction:column;gap:18px}.pframe{flex-basis:auto;width:min(62vw,260px)}.mtxt{text-align:center;padding:18px}}
+.nav{display:none!important}
+.nav{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:center;gap:14px;cursor:default}
+.dots{display:none}.dot{width:10px;height:10px;border-radius:99px;background:var(--line);transition:all .4s;cursor:pointer}.dot.on{width:30px;background:var(--pink)}
+.btn{width:38px;height:38px;border-radius:50%;border:0;background:var(--card);color:var(--pink);font-size:18px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 4px 12px rgba(194,24,91,.25);transition:transform .2s}.btn:hover{transform:scale(1.15)}
+.heart{position:fixed;z-index:9;pointer-events:none;font-size:22px;animation:fly 1.1s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--x),var(--y)) scale(.4) rotate(var(--r));opacity:0}}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div>
+<canvas id="fx"></canvas>
+<div id="app"></div>
+<div class="nav"><button class="btn" id="prev" aria-label="Trước">‹</button><div class="dots" id="dots"></div><div class="prog"><i id="bar"></i></div><b id="cnt"></b><button class="btn" id="next" aria-label="Sau">›</button></div>
+
+<script>
+/* ============ CHỈNH NỘI DUNG Ở ĐÂY ============ */
+const CONFIG={
+  intro:"Gửi trao yêu thương nhân ngày",
+  introSub:"Chạm vào màn hình để bắt đầu 💗",
+  /* 3 ảnh chung: điền đường dẫn ảnh vào src */
+  photos:[
+    {src:"IMG_20251214_205552.jpg",caption:"Love"},
+    {src:"IMG_20260326_161225.jpg",caption:"Love"},
+    {src:"IMG_20261016_170909.jpg",caption:"Love"}
+  ],
+  wishTitle:"Lời chúc",
+  wishText:"Nhân 20/10, chúc mấy bạn nữ dui dẻ, hạnh phúc, khoẻ mạnh, đạt nhiều thành công trong tương lai, mãi xinh, mãi yêuu;) wish yall all the best❤️😘😘😍😘🥰😍😘",
+  /* 16 bạn, mỗi bạn 1 trang: điền src (ảnh), name (tên), wish (lời chúc) */
+  members:[
+    {name:"Đinh Trần Ái Vi",  src:"Ái Vi.jpg", wish:"Happy 20/10 nha Vi 🎀💐 Chúc bà luôn vui vẻ, học giỏi, điểm cao, tiền vô như nước, muộn phiền trôi như bài kiểm tra chưa học 🤣 Cảm ơn bà vì đã làm bạn cùng bàn của tui, tuy đôi lúc hơi báo nhưng thôi, tui vẫn chấp nhận được =)))) Chúc bà có một ngày 20/10 thật vui vẻ, được yêu thương hết nấc ."},
+    {name:"Doãn Tùng Chi",  src:"", wish:"Tùng Chi 20/10 hạnh phúc hông quạo nữa nhoa"},
+    {name:"Nguyễn Trà Minh Hạnh",  src:"Hạnh.jpg", wish:"Nhân ngày 20/10, chúc HẠNH luôn xinh đẹp, da trắng dáng xinh, tiền vô như nước, tình yêu tự tìm đến, kiểm tra không trúng tủ vẫn trúng đề 😭🙏 Đừng có ngày nào cũng ngồi cạnh tui than ế nữa 🤡 Cảm ơn bà đã góp phần làm cho cuộc đời học sinh của tui thêm náo nhiệt, giáo viên thêm đau đầu và cái lớp thêm mất trật tự 🤣💗."},
+    {name:"Trà Hoàng Bảo Trâm",  src:"Trâm.jpg", wish:"Chúc Trâm 20/10 vui vẻ nha, chúc bà luôn xinh đẹp, học giỏi, lúc nào cũng vui vẻ và gặp nhiều may mắn trong cuộc sống nhé!"},
+    {name:"Nguyễn Thị Bảo Khuyên",  src:"", wish:"Chúc Khuyên 20/10 xinh đẹp và học giỏi nhé, năm cuối trò chuyện với mn thêm nha"},
+    {name:"Phân Thị Ngọc Dung",  src:"Dung.jpg", wish:"Chúc Dung 20-10 vui vẻ, hạnh phúc. Chúc bạn ngày càng xinh đẹp, học giỏi hơn và thành công trên con đường bạn chọn."},
+    {name:"Đống Ngọc Hoài Oanh",  src:"Oanh.jpg", wish:"Chúc Oanh một ngày 20/10 thật nhiều niềm vui và ngập tràn hạnh phúc. Mong rằng nụ cười rạng rỡ luôn ở trên môi Oanh, không chỉ riêng hôm nay mà trong tất cả những ngày phía trước. Chúc Oanh luôn bình an, gặp nhiều may mắn và tìm được tình yêu mới!"},
+    {name:"Phạm Thụy Hữu Duyên",  src:"Duyên.jpg", wish:"Chúc Hữu Duyên luôn dễ thương, vui vẻ và lúc nào cũng tràn đầy năng lượng nha. Chúc Duyên đạt được những mục tiêu mình mong muốn và luôn giữ nụ cười trên môi. Đây là 20/10 cuối cấp rồi, mong rằng chúng ta sẽ có thật nhiều kỷ niệm đáng nhớ cùng nhau trước khi mỗi người bước sang một chặng đường mới."},
+    {name:"Nguyễn Trần Lâm Như",  src:"Như.jpg", wish:"20/10 chúc bạn Như luôn vv, khoẻ mạnh, xinh đẹp và hạnh phúc với mọi lựa chọn của mình."},
+    {name:"Nguyễn Ngọc Thúy Vi", src:"Thúy Vi.jpg", wish:"Chúc Thúy Vi có một ngày 20/10 thật nhiều niềm vui, nụ cười và những điều ngọt ngào! Chúc Vi luôn xinh đẹp, rạng rỡ, học tập/công việc thuận lợi và sớm đạt được mọi mục tiêu của mình nhé!"},
+    {name:"Lương Xuân My", src:"My.jpg", wish:"Chúc My 20/10 xinh đẹp x3, niềm vui x10 và lúc nào cũng rạng rỡ như mùa xuân đúng như tên gọi nhé! Happy Women's Day!"},
+    {name:"Nguyễn Thị Nguyệt", src:"Nguyệt.jpg", wish:"Chúc Nguyệt 20/10 thật vui vẻ và hạnh phúc nhaaa 🌷💗 Chúc Nguyệt lúc nào cũng xinh đẹp, rạng rỡ, luôn vui vẻ và gặp thật nhiều điều may mắn trong cuộc sống. Chúc cô gái đặc biệt này mãi xinh tươi, bình an và mọi điều tốt đẹp nhất sẽ đến với Nguyệt nhéee 🥰❤️🌹"},
+    {name:"Phạm Thị Bảo Thanh", src:"Thanh.jpg", wish:"Chúc Bảo Thanh một ngày 20/10 tràn đầy nắng ấm và dịu dàng. Mong rằng Thanh luôn như một giai điệu đẹp, nhẹ nhàng nhưng đủ sức làm bừng sáng mọi khoảng không gian quanh mình. Luôn xinh đẹp, tự tin và vững bước với những điều Thanh lựa chọn nhé!"},
+    {name:"Trần Thị Phương Linh", src:"Linh.jpg", wish:"Chúc cậu 20-10 vui vẻ, ngày càng xinh gái, gặp nhiều điều may mắn và luôn nở nụ cười trên môi nha. Gửi Phương Linh"},
+    {name:"Nguyễn Thị Phượng", src:"Phượng.jpg", wish:"Chúc Phượng ngày 20/10 không chỉ ngập tràn hoa và quà, mà còn có thêm thật nhiều năng lượng để chinh phục mọi mục tiêu sắp tới. Mong rằng mọi dự định của Phượng đều chạy 'mượt mà', việc gì cũng thuận lợi và sớm gặt hái những kết quả rực rỡ nhất!"},
+    {name:"Trần Thị Trang", src:"Trang.jpg", wish:"Chúc Trang ngày 20/10 không chỉ nhận được thật nhiều lời chúc hay, mà còn nạp đầy năng lượng để 'bứt phá' mọi mục tiêu sắp tới. Mong rằng mọi nỗ lực của Trang đều đơm hoa kết trái và gặt hái những kết quả rực rỡ nhất!"}
+  ],
+  /* Video: điền đường dẫn file video (mp4) vào src */
+  video:"video.mp4",
+  /* Trang chúc cô: điền src (ảnh), name (tên cô), wish (lời chúc) */
+  teacher:{name:"Gửi cô yêu quý",src:"",wish:"Nhân ngày 20/10, chúng em chúc cô Thanh luôn mạnh khỏe, vui vẻ và luôn giữ được nhiệt huyết với nghề. Cảm ơn cô vì suốt thời gian qua đã luôn tận tâm, kiên nhẫn và đồng hành cùng chúng em. Đây cũng là 20/10 cuối cấp mà chúng em được đón cùng cô, nên chắc chắn sẽ là một kỷ niệm rất đáng nhớ. Chúng em chúc cô luôn hạnh phúc, thành công và có thật nhiều thế hệ học sinh yêu quý cô như chúng em! ❤️"},
+  finalTitle:"Lời chúc 20/10 💐",
+  finalText:"Gửi các cô gái lớp 12/3 thân yêu,\n\nĐây là ngày 20/10 cuối cùng của tuổi học trò. Chúc các bạn luôn rạng rỡ như những đóa hồng, đủ mạnh mẽ để bước qua mùa thi phía trước và giữ mãi nụ cười trong veo của tuổi mười tám.\n\nMai này mỗi người một phương trời, nhưng mong 12/3 vẫn là nơi để chúng mình trở về.\n\nChúc các bạn một ngày 20/10 thật ấm áp, thật vui và thật nhiều kỷ niệm đẹp! 🌸"
+};
+/* ============================================== */
+const $=(s,r=document)=>r.querySelector(s),app=$('#app');
+const slot=(src,label)=>`<label class="slot ${src?'has':''}" title="Bấm để chọn ảnh xem thử">${src?`<img src="${src}" alt="">`:''}<span><b>📷</b><br>${label}</span><input type="file" accept="image/*" hidden></label>`;
+const vslot=src=>src?`<div class="slot has"><video src="${src}" controls playsinline></video></div>`:`<label class="slot"><span><b>🎬</b><br>Chèn video vào đây</span><input type="file" accept="video/*" hidden></label>`;
+const stages=[];
+const mk=(cls,html)=>{const d=document.createElement('section');d.className='stage '+cls;d.innerHTML=html;app.appendChild(d);stages.push(d);return d};
+mk('',`<p class="script" style="font-size:clamp(26px,5vw,44px)">${CONFIG.intro}</p><div class="big script">20/10</div><p class="script cls">Lớp 12/3 🎀</p><p class="hint">${CONFIG.introSub}</p>`);
+CONFIG.photos.forEach((p,i)=>mk('',`<h1 class="script">Kỷ niệm ${i+1}</h1><div class="frame" style="margin-top:14px">${slot(p.src,'Chèn ảnh chung vào đây')}</div><p class="cap script">${p.caption}</p>`));
+const wishSt=mk('',`<div class="wish"><h1 class="script">${CONFIG.wishTitle} 💌</h1><p id="wt"></p></div>`);
+CONFIG.members.forEach((m,i)=>mk('',`<div class="mem"><div class="pframe">${slot(m.src,'')}</div><div class="mtxt"><h1 class="script">${m.name}</h1><p class="mwish">${m.wish}</p></div></div>`));
+mk('',`<p class="tag">DÀNH TẶNG CÔ 🌹</p><div class="mem"><div class="pframe">${slot(CONFIG.teacher.src,'Chèn ảnh cô vào đây')}</div><div class="mtxt"><h1 class="script">${CONFIG.teacher.name}</h1><p class="mwish">${CONFIG.teacher.wish}</p></div></div>`);
+mk('',`<h1 class="script">Video kỷ niệm 🎬</h1><div class="vf">${vslot(CONFIG.video)}</div>`);
+const finSt=mk('',`<div class="wish fin"><h1 class="script">${CONFIG.finalTitle}</h1><p id="ft"></p></div>`);
+const dots=$('#dots');stages.forEach((_,i)=>{const d=document.createElement('i');d.className='dot';d.onclick=e=>{e.stopPropagation();go(i)};dots.appendChild(d)});
+let cur=-1,tw;
+function type(el,txt,sp=45){clearInterval(tw);el.textContent='';el.classList.add('caret');let i=0;tw=setInterval(()=>{el.textContent=txt.slice(0,++i);if(i>=txt.length){clearInterval(tw);el.classList.remove('caret')}},sp)}
+function go(n){n=Math.max(0,Math.min(stages.length-1,n));if(n===cur)return;
+  stages.forEach((s,i)=>{s.classList.toggle('on',i===n);s.classList.toggle('out',i<n)});
+  [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===n));
+  cur=n;$('#bar').style.width=((n+1)/stages.length*100)+'%';$('#cnt').textContent=(n+1)+'/'+stages.length;if(stages[n]===wishSt)type($('#wt'),CONFIG.wishText);if(stages[n]===finSt)type($('#ft'),CONFIG.finalText,28);
+  if(stages[n]===finSt||n===0)burst(innerWidth/2,innerHeight/2,18);
+  else if(n===cur)burst(innerWidth/2,innerHeight/2,8)}
+go(0);
+/* Điều hướng */
+document.body.addEventListener('click',e=>{if(e.target.closest('.nav,.mtxt,.slot'))return;burst(e.clientX,e.clientY,10);go(cur+1)});
+$('#next').onclick=e=>{e.stopPropagation();go(cur+1)};$('#prev').onclick=e=>{e.stopPropagation();go(cur-1)};
+addEventListener('keydown',e=>{if(['ArrowRight',' ','Enter'].includes(e.key))go(cur+1);if(e.key==='ArrowLeft')go(cur-1)});
+let tx;addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>60&&!e.target.closest('video'))go(cur+(d<0?1:-1))});
+/* Xem thử ảnh từ máy (chỉ hiển thị tạm thời) */
+document.addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const l=e.target.closest('.slot');const t=f.type.startsWith('video')?'video':'img';let im=$(t,l);if(!im){im=document.createElement(t);if(t==='video'){im.controls=true;im.playsInline=true}l.prepend(im)}im.src=URL.createObjectURL(f);l.classList.add('has')});
+/* Lật thẻ */
+
+/* Hiệu ứng nghiêng 3D + parallax */
+addEventListener('mousemove',e=>{const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;
+  $('.b1').style.transform=`translate(${x*60}px,${y*60}px)`;$('.b2').style.transform=`translate(${-x*80}px,${-y*80}px)`;
+  document.querySelectorAll('.stage.on .frame').forEach(f=>f.style.transform=`rotate(-1.5deg) perspective(900px) rotateY(${x*14}deg) rotateX(${-y*14}deg)`)});
+/* Tim bay khi bấm */
+function burst(x,y,n){const em=['💗','🌸','💖','✨','🎀','🌷'];for(let i=0;i<n;i++){const h=document.createElement('div');h.className='heart';h.textContent=em[i%em.length];
+  const a=Math.random()*6.28,d=50+Math.random()*110;h.style.cssText+=`left:${x}px;top:${y}px;--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d-60}px;--r:${(Math.random()-.5)*160}deg`;document.body.appendChild(h);setTimeout(()=>h.remove(),1100)}}
+/* Cánh hoa rơi (canvas) */
+const cv=$('#fx'),cx=cv.getContext('2d');let W,H,P=[];
+function size(){W=cv.width=innerWidth;H=cv.height=innerHeight}size();addEventListener('resize',size);
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+for(let i=0;i<(reduce?0:45);i++)P.push({x:Math.random()*W,y:Math.random()*H,r:6+Math.random()*10,s:.5+Math.random()*1.2,a:Math.random()*6.28,w:Math.random()*.03+.01,c:['#ff7eb3','#ffb3d1','#ff4f8b','#ffd1e3'][i%4]});
+(function draw(){cx.clearRect(0,0,W,H);P.forEach(p=>{p.y+=p.s;p.a+=p.w;p.x+=Math.sin(p.a)*1.2;if(p.y>H+20){p.y=-20;p.x=Math.random()*W}
+  cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.globalAlpha=.75;cx.beginPath();cx.ellipse(0,0,p.r,p.r*.55,0,0,6.28);cx.fill();cx.restore()});requestAnimationFrame(draw)})();
+</script>
+</body>
+</html>
